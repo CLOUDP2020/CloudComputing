@@ -2,7 +2,7 @@ var AWS = require('aws-sdk');
 var fs = require('fs')
 var s3 = new AWS.S3();
 
-uploadBinFile('main.js', 'therealfinalbucket', 'main.js')
+uploadBinFile('package.json', 'therealfinalbucket', 'key_package_json.json')
 
 function uploadBinFile(path, bucketName, fileName) {
     fs.readFile(path, function(err, data) {
