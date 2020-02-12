@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  h1 Bucket: #{name}
+  p Welcome to S3 Client
+  p List of objects
+  
+  table
+    tr
+        td Name
+        td View
+    each obj in bucket
+        tr
+            td #{obj.Key}
+            td #[a(href='/#{obj.Key}/') View]
