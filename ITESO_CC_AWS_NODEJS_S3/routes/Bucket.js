@@ -10,40 +10,58 @@ router.use(fileUpload());
 router.get('/', function(req, res) {
   s3.listBuckets({},function(err,data) {
       if(err) {
-          throw err;
+          res.render('error', {err})
+          return;
       }
-      console.log(data);
       res.render('listBuckets', { buckets: data.Buckets});
   });
 });
 
 router.get('/:bucket/', function(req, res) {
-
-    /*
-     * @TODO - Programa la logica para obtener los objetos de un bucket.
-     *         Se debe tambien generar una nueblo templade en jade para presentar
-     *         esta información. Similar al que lista los Buckets.
-     */
+     let bucketName = req.params.bucket;
     
-});
+     s3.listObjects({Bucket: bucketName},function(err, data) {
+        if(err) {
+            res.render('error', {err})
+            return;
+        }
+        res.render('bucket', {name: data.Name, bucket: data.Contents})
+    });
+  });
 
 router.get('/:bucket/:key', function(req, res) {
+    let bucketName = req.params.bucket;
+    let key = req.params.key;
+    let params = {
+        Bucket: bucketName,
+        Key: key
+    };
     
-    /*
-     * @TODO - Programa la logica para obtener un objeto en especifico
-     * es importante a la salida enviar el tipo de respuesta y el contenido
-     * 
-     * Ejemplo de esto:
-     *     res.type(...) --> String de content-type
-     *     res.send(...) --> Buffer con los datos.
-     */    
+    s3.getObject(params,function(err, data) {
+       if(err) {
+           res.render('error', {err});
+           return;
+       }
+       res.type(data.ContentType);
+       res.send(data.Body);
+   });
 });
 
 
-router.post('/', function(req,res) {
-    /*
-     * @TODO - Programa la logica para crear un Bucket.
-    */
+router.post('/', async function(req,res) {
+    let bucketName = req.body.bucket;
+    console.log(bucketName);
+    var params = {
+        Bucket: bucketName
+    };
+    
+    s3.createBucket(params, function(err, data) {
+        if(err) {
+            res.render('error', {err});
+            return;
+        }
+        res.send(data);
+    });
 });
 
 router.post('/:bucket', function(req,res) {
