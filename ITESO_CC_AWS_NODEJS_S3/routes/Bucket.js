@@ -65,21 +65,36 @@ router.post('/', async function(req,res) {
 });
 
 router.post('/:bucket', function(req,res) {
-
-    /*
-     * @TODO - Programa la logica para crear un nuevo objeto.
-     * TIPS:
-     *  req.files contiene todo los archivos enviados mediante post.
-     *  cada elemento de files contiene multiple información algunos campos
-     *  importanets son:
-     *      data -> Buffer con los datos del archivo.
-     *      name -> Nombre del archivo original
-     *      mimetype -> tipo de archivo.
-     *  el conjunto files dentro del req es generado por el modulo 
-     *  express-fileupload
-     *  
-    */
-     
+   let err = {
+       code: "error",
+       message: "no files sended",
+       stack: ""
+   }
+   if (req.files == undefined) {
+       res.render('error', {err});
+       return;
+   }
+    let keys = Object.keys(req.files);
+    if (keys.length > 1) {
+        err.code = 'Two many files.';
+        err.message = 'Such one file upload is supported';
+        res.render('error', {err});
+        return;
+    }
+    let bucketName = req.params.bucket;
+    let file = req.files[keys[0]];
+    let params = {
+        Bucket: bucketName,
+        Key: file.name,
+        Body: file.data
+    };
+    s3.putObject(params, function(err, data){
+        if(err) {
+            res.render('error', {err});
+            return;
+        }
+        res.send(data)
+    });     
 });
 
 module.exports = router;
