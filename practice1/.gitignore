@@ -1,4 +1,5 @@
 env/
 *.pyc
 *.ttl
+*.db
 dynamo/config.json
