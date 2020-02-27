@@ -1,0 +1,4 @@
+env/
+*.pyc
+*.ttl
+dynamo/config.json
