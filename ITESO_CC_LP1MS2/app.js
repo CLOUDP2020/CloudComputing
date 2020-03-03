@@ -38,23 +38,23 @@ app.get('/search/:word', function(req, res) {
   var stemmedword = stemmer(req.params.word).toLowerCase(); //stem the word
   console.log("Stemmed word: "+stemmedword);
   
-  var imageurls = new Array(); 
+  var imageurls = []; 
   
   var processData = function(callback) {
       terms.get(stemmedword, function(err, data) {
       if (err) {
-        console.log("getAttributes() failed: "+err);
+        console.log("getAttributes() failed: " + err);
         callback(err.toString(), imageurls);
       } else if (data == null) {
         console.log("getAttributes() returned no results");
         callback(undefined, imageurls);
       } else {
   	    async.forEach(data, function(attribute, callback) { 
-                images.get(attribute.value, function(err, data){
+                images.get(attribute.category, function(err, data){
                     if (err) {
                         console.log(err);
                     }
-                    imageurls.push(data[0].value);
+                    imageurls.push(data[0].url);
                     callback();
                  });
           }, function() {
@@ -73,19 +73,19 @@ app.get('/search/:word', function(req, res) {
   });
 });
 
-//INIT Logic
 var images = new dynamoDbTable('images');
-var terms = new dynamoDbTable('terms');
+var terms = new dynamoDbTable('labels');
 
 images.init(
     function(){
         terms.init(
             function(){
-                console.log("Images Storage Starter");
+                console.log("Labels Storage Initialized");
             }
         )
-        console.log("Terms Storage Starter");
+        console.log("Images Storage Initialized");
     }    
 );
 
+app.listen(3000, () => console.log(`Server ready`));
 module.exports = app;
