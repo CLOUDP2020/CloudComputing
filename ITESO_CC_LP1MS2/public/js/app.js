@@ -17,30 +17,37 @@ $(document).ready(function() {
     $("#dialogtitle").html("Search for: "+$("#searchfield").val());
     $("#previous").hide();
     $("#next").hide();
+    // Request search to the server.
     $.getJSON('/search/' + $("#searchfield").val() , function(data) {
       renderQueryResults(data);
     });
   }
-
+  // Images to be displayed
   images = [];
+  // Index for pagination
   currentIndex = 0;
   $("#next").click( function(e) {
+    // Increment current index for pagination.
     currentIndex++;
     let maxImagesToRender = images.length - (currentIndex*4);
     let i;
+    // Render images
     for(i = 0; i < maxImagesToRender; i++) {
       $(`#img${i}`).attr("src", images[i + (currentIndex*4)]);
       $(`#img${i}`).show(); 
     }
-    //Hide the remaining input elements.
+    // Hide the remaining img elements.
     for(; i <= 3; i++) {
       $(`#img${i}`).hide();
     }
+
     $("#previous").show();
     if(maxImagesToRender < 4) $(this).hide();
   });
-  //[ url0, url1, url2, url3, url4, url5, url6, url7, url8, url9]
+  
+
   $("#previous").click( function(e) {
+    // Decrement current index for pagination.
     currentIndex--;
     for(let i = 0; i < 4; i++) {
       $(`#img${i}`).attr("src", images[i + (currentIndex*4)]);
@@ -51,10 +58,12 @@ $(document).ready(function() {
   });
 
   function renderQueryResults(data) {
+    // Images to be processed
     images = [];
     if (data.error != undefined) {
       $("#status").html("Error: "+data.error);
     } else {
+      // Init current index at 0.
       currentIndex = 0;
       $("#status").html(""+data.num_results+" result(s)");
       let maxImagesToRender = (data.num_results >= 4)? 4: data.num_results;
@@ -65,7 +74,7 @@ $(document).ready(function() {
         $(`#img${i}`).show();
       }
       console.log("Current i: ", i);
-      //Hide the remaining input elements.
+      // Hide the remaining input elements.
       for(; i <= 3; i++) {
         $(`#img${i}`).hide();
       }

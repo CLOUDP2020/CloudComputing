@@ -41,7 +41,7 @@ app.get('/search/:word', function(req, res) {
   var imageurls = []; 
   
   var processData = function(callback) {
-      terms.get(stemmedword, function(err, data) {
+      terms.get(stemmedword, function(err, data) { // Begin search
       if (err) {
         console.log("getAttributes() failed: " + err);
         callback(err.toString(), imageurls);
@@ -49,6 +49,8 @@ app.get('/search/:word', function(req, res) {
         console.log("getAttributes() returned no results");
         callback(undefined, imageurls);
       } else {
+        // Iterate through the items and save the urls of the related images
+        // in a list.
   	    async.forEach(data, function(attribute, callback) { 
                 images.get(attribute.category, function(err, data){
                     if (err) {
@@ -58,6 +60,8 @@ app.get('/search/:word', function(req, res) {
                     callback();
                  });
           }, function() {
+            // One we finished processing the images we use a callback
+            // to send the information.
             callback(undefined, imageurls);
           });
      }
@@ -65,6 +69,7 @@ app.get('/search/:word', function(req, res) {
   };
 
   processData(function(err, queryresults) {
+    // Callback
     if (err) {
       res.send(JSON.stringify({results: undefined, num_results: 0, error: err}));
     } else {
@@ -76,6 +81,7 @@ app.get('/search/:word', function(req, res) {
 var images = new dynamoDbTable('images');
 var terms = new dynamoDbTable('labels');
 
+// Unit tables to be used.
 images.init(
     function(){
         terms.init(

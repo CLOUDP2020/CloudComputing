@@ -5,7 +5,7 @@
 
   function keyvaluestore(table) {
     this.LRU = require("lru-cache");
-    this.cache = new this.LRU({ max: 500 });
+    this.cache = new this.LRU({ max: 500 }); // Add missing new keyword.
     this.tableName = table;
   };
   
@@ -42,12 +42,15 @@
   
 keyvaluestore.prototype.get = function(search, callback) {
     var self = this;
-    
+    // If we have the request search in cache we do not search again.
     if (self.cache.get(search))
           callback(null, self.cache.get(search));
     else {
       var items = [];
       if(this.tableName == "images") {
+        /**
+         * Params for the query in the table of images.
+         */
         let params = {
           TableName: this.tableName,
           ExpressionAttributeNames: {
@@ -60,7 +63,7 @@ keyvaluestore.prototype.get = function(search, callback) {
           KeyConditionExpression: '#keyw = :key',
           ProjectionExpression: '#murl,#keyw'
         };
-
+        // Query the images using the params that we defined previuosly.
         db.query(params, (err, data) => {
           if(err) {
             console.log(err);
@@ -72,12 +75,15 @@ keyvaluestore.prototype.get = function(search, callback) {
                 ,"url": item.url.S
               });
             });
-            self.cache.set(search,items);
+            self.cache.set(search,items); // Add search results into the cache.
             callback(null,items);
             };
           }
         );
       } else if (this.tableName == "labels") {
+        /**
+         * Params for the query in the table of labels.
+         */
         var params = {
           TableName: this.tableName,
           ExpressionAttributeNames: {
@@ -90,7 +96,7 @@ keyvaluestore.prototype.get = function(search, callback) {
           KeyConditionExpression: '#keyw = :key',
           ProjectionExpression: 'inx,#cat,#keyw'
         };
-
+        // Query the labels using the params that we defined previuosly.
         db.query(params, (err, data) => {
           if(err) {
             console.log(err);
