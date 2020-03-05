@@ -13,6 +13,7 @@ kv_images = KeyValue.SqliteKeyValue("sqlite_images.db","images")
 
 dict_search = {}
 arguments = len(sys.argv)
+# Create Dynamodb utils class that will be used to search images.
 d = Dynamodb('C:\\Users\\isaac\\Documents\\Github\\Isaac\\ITESO\\Cloud\\practice1\\dynamo\\config.json')
 
 # Searching using db files.
@@ -36,6 +37,8 @@ d = Dynamodb('C:\\Users\\isaac\\Documents\\Github\\Isaac\\ITESO\\Cloud\\practice
 
 # Searching using Dynamodb
 
+# We receive arguments from the consoline. Each argument is a keyword to search related images to it.
+# If we don't have any arguments I print a message showing it.
 if (arguments > 1):
     for i in range(1, arguments):
         steam_arg = Stemmer.stem(sys.argv[i])

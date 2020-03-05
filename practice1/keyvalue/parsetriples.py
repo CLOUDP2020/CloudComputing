@@ -20,7 +20,7 @@ class ParseTriples():
         if(not line):
             print("Line was not found.")
             return None
-        
+        # Update regular expression.
         m = re.match('<(.+)>\s*<(.+)>\s*[<"](.+)[<"]',line.strip())
 
         if(m):

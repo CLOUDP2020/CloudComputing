@@ -174,10 +174,12 @@ class Dynamodb():
         res = self.table_labels.query(KeyConditionExpression=Key('keyword').eq(keyword))
         categories = []
         matches = []
+        # Fill list of categories that matches with the search keyword.
         for item in res['Items']:
             categories.append(item['category'])
         
         # TODO: Ask if this is the best way to do this.
+        # Get all images of the categories fetched previously.
         for cat in categories:
             r = self.table_images.get_item(
                 Key = {'keyword': cat},
